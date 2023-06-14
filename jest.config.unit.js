@@ -1,0 +1,21 @@
+module.exports = {
+  clearMocks: true,
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  verbose: true,
+  preset: 'ts-jest',
+  testEnvironment: 'jest-environment-node',
+  testMatch: ['**/__tests__/**/*.unit.test.ts'],
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/index.ts',
+    '!src/**/*.config.ts',
+    '!**/__tests__/**',
+    '!**/__mocks__/**',
+    '!src/**/*.enums.ts',
+    '!src/**/*.errors.ts',
+    '!src/**/*.error.ts',
+    '!src/**/*.types.ts',
+    '!src/**/*.type.ts',
+  ],
+};
