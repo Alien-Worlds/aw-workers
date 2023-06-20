@@ -12,11 +12,14 @@ import { UndefinedPointerError } from './worker-loader.errors';
  *
  * @template SharedDataType - The type of shared data.
  */
-export abstract class WorkerLoader<SharedDataType = unknown> {
+export abstract class WorkerLoader<
+  SharedDataType = unknown,
+  DependenciesType = WorkerLoaderDependencies
+> {
   /**
    * A worker loader dependencies.
    */
-  public abstract dependencies: WorkerLoaderDependencies;
+  public abstract dependencies: DependenciesType;
 
   /**
    * A map of worker bindings.
@@ -50,13 +53,15 @@ export abstract class WorkerLoader<SharedDataType = unknown> {
  *
  * @template SharedDataType - The type of shared data.
  */
-export class DefaultWorkerLoader<SharedDataType = unknown>
-  implements WorkerLoader<SharedDataType>
+export class DefaultWorkerLoader<
+  SharedDataType = unknown,
+  DependenciesType = WorkerLoaderDependencies
+> implements WorkerLoader<SharedDataType, DependenciesType>
 {
   /**
    * A worker loader dependencies.
    */
-  public dependencies: WorkerLoaderDependencies;
+  public dependencies: DependenciesType;
 
   /**
    * A map of worker bindings.
@@ -81,7 +86,7 @@ export class DefaultWorkerLoader<SharedDataType = unknown>
     this.sharedData = sharedData;
     // if they are dependencies, initialize them for further use
     if (this.dependencies) {
-      await this.dependencies.initialize(...args);
+      await (this.dependencies as WorkerLoaderDependencies).initialize(...args);
     }
   }
 
