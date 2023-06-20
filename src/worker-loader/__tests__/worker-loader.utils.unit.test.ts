@@ -88,3 +88,35 @@ describe('getWorkerLoader', () => {
     expect(existsSync).toHaveBeenCalledWith(loaderPath);
   });
 });
+
+describe('getWorkerLoaderDependencies', () => {
+  const filePath = 'worker-dependencies.js';
+  const loaderPath = '/build/worker-dependencies.js';
+  let cwdSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    cwdSpy = jest.spyOn(process, 'cwd');
+    (existsSync as jest.Mock).mockReturnValue(true);
+    jest.doMock(loaderPath, () => ({ default: WorkerLoader }), { virtual: true });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cwdSpy.mockRestore();
+  });
+
+  it('should return WorkerLoader instance if file exists', () => {
+    const filePath = 'worker-dependencies.js';
+    cwdSpy.mockReturnValue('/build');
+    (path.resolve as jest.Mock).mockReturnValue(`/build/${filePath}`);
+    const workerLoader = getWorkerLoader(filePath);
+    expect(existsSync).toHaveBeenCalledWith(loaderPath);
+    expect(workerLoader).toBeInstanceOf(WorkerLoader);
+  });
+
+  it('should throw InvalidPathError if file does not exist', () => {
+    (existsSync as jest.Mock).mockReturnValue(false);
+    expect(() => getWorkerLoader(filePath)).toThrow(InvalidPathError);
+    expect(existsSync).toHaveBeenCalledWith(loaderPath);
+  });
+});

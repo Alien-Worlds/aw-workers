@@ -4,6 +4,7 @@ import { existsSync } from 'fs';
 import path from 'path';
 import { InvalidPathError } from '../worker.errors';
 import { DefaultWorkerLoader, WorkerLoader } from './worker-loader';
+import { WorkerLoaderDependencies } from './worker-loader.types';
 
 /**
  * Builds the absolute file path based on the given relative file path.
@@ -46,4 +47,20 @@ export const getWorkerLoader = (path: string): WorkerLoader => {
   }
 
   return new DefaultWorkerLoader();
+};
+
+/**
+ * Retrieves the worker loader dependencies instance based on the provided path.
+ *
+ * @param {string} path - The path to the worker loader file.
+ * @returns {WorkerLoaderDependencies} - The worker loader dependencies instance.
+ * @throws {InvalidPathError} - If the specified file path does not exist.
+ */
+export const getWorkerLoaderDependencies = (path: string): WorkerLoaderDependencies => {
+  const loaderPath = buildPath(path);
+  if (existsSync(loaderPath) === false) {
+    throw new InvalidPathError(loaderPath);
+  }
+  const WorkerLoaderDependenciesClass = require(loaderPath).default;
+  return new WorkerLoaderDependenciesClass() as WorkerLoaderDependencies;
 };

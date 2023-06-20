@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { existsSync } from 'fs';
 import { Worker } from '../worker';
-import { buildPath } from './worker-loader.utils';
+import { buildPath, getWorkerLoaderDependencies } from './worker-loader.utils';
 import { WorkerClass } from '../worker.types';
-import { WorkerConstructorArgs } from './worker-loader.types';
+import { WorkerConstructorArgs, WorkerLoaderDependencies } from './worker-loader.types';
 import { UndefinedPointerError } from './worker-loader.errors';
 
 /**
@@ -13,6 +13,11 @@ import { UndefinedPointerError } from './worker-loader.errors';
  * @template SharedDataType - The type of shared data.
  */
 export abstract class WorkerLoader<SharedDataType = unknown> {
+  /**
+   * A worker loader dependencies.
+   */
+  public abstract dependencies: WorkerLoaderDependencies;
+
   /**
    * A map of worker bindings.
    */
@@ -49,10 +54,21 @@ export class DefaultWorkerLoader<SharedDataType = unknown>
   implements WorkerLoader<SharedDataType>
 {
   /**
+   * A worker loader dependencies.
+   */
+  public dependencies: WorkerLoaderDependencies;
+
+  /**
    * A map of worker bindings.
    */
   public bindings: Map<string, WorkerClass> = new Map();
   protected sharedData: SharedDataType;
+
+  constructor(protected dependenciesPointer?: string) {
+    if (dependenciesPointer) {
+      this.dependencies = getWorkerLoaderDependencies(dependenciesPointer);
+    }
+  }
 
   /**
    * Sets up the default worker loader with shared data and additional arguments.
@@ -63,6 +79,10 @@ export class DefaultWorkerLoader<SharedDataType = unknown>
    */
   public async setup(sharedData: SharedDataType, ...args: unknown[]): Promise<void> {
     this.sharedData = sharedData;
+    // if they are dependencies, initialize them for further use
+    if (this.dependencies) {
+      await this.dependencies.initialize(...args);
+    }
   }
 
   /**
