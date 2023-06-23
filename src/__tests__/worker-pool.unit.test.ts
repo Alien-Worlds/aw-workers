@@ -1,30 +1,31 @@
 import { WorkerProxy } from '../worker-proxy';
 import { WorkerPool } from '../worker-pool';
 import { getWorkersCount } from '../worker.utils';
+import { testPath } from '../worker-loader/worker-loader.utils';
 
-jest.mock('../worker-proxy', () => {
-  return {
-    WorkerProxy: jest.fn().mockImplementation(() => ({
-      setup: jest.fn(),
-      load: jest.fn(),
-      dispose: jest.fn(),
-      remove: jest.fn(),
-    })),
-  };
-});
+jest.mock('../worker-loader/worker-loader.utils', () => ({
+  testPath: jest.fn(),
+}));
 
-jest.mock('../worker.utils', () => {
-  return {
-    getWorkersCount: jest.fn(),
-  };
-});
+jest.mock('../worker-proxy', () => ({
+  WorkerProxy: jest.fn().mockImplementation(() => ({
+    setup: jest.fn(),
+    load: jest.fn(),
+    dispose: jest.fn(),
+    remove: jest.fn(),
+  })),
+}));
+
+jest.mock('../worker.utils', () => ({
+  getWorkersCount: jest.fn(),
+}));
 
 describe('WorkerPool', () => {
   let workerPool: WorkerPool;
   let mockWorkerProxy: any;
 
   beforeEach(() => {
-    mockWorkerProxy = new WorkerProxy({},{});
+    mockWorkerProxy = new WorkerProxy({}, {});
     (WorkerProxy as any).mockClear();
     (WorkerProxy as any).mockImplementation(() => mockWorkerProxy);
 

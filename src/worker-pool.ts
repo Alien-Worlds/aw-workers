@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { testPath } from './worker-loader';
 import { WorkerProxy } from './worker-proxy';
+import { InvalidPathError } from './worker.errors';
 import { WorkerPoolOptions } from './worker.types';
 import { getWorkersCount } from './worker.utils';
 
@@ -67,6 +69,20 @@ export class WorkerPool<WorkerType = Worker> {
     } = options;
     this.workerLoaderPath = workerLoaderPath;
     this.workerLoaderDependenciesPath = workerLoaderDependenciesPath;
+
+    const isValidWorkerLoaderPath = testPath(workerLoaderPath);
+    const isValidWorkerLoaderDependenciesPath = testPath(workerLoaderDependenciesPath);
+
+    if (isValidWorkerLoaderPath === false) {
+      throw new InvalidPathError(workerLoaderPath, 'worker loader');
+    }
+
+    if (isValidWorkerLoaderPath && isValidWorkerLoaderDependenciesPath === false) {
+      console.warn(
+        `Path to dependencies not provided, make sure they are implemented in your worker loader.`
+      );
+    }
+
     this.sharedData = sharedData;
     this.workerMaxCount =
       threadsCount > inviolableThreadsCount

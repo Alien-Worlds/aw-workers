@@ -1,8 +1,8 @@
 export class MissingWorkerPathError extends Error {}
 
 export class InvalidPathError extends Error {
-  constructor(path: string) {
-    super(`The given path is invalid: ${path}`);
+  constructor(path: string, of?: string) {
+    super(`The given ${of} path is invalid: ${path}`);
   }
 }
 

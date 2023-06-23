@@ -69,3 +69,18 @@ export const getWorkerLoaderDependencies = <DependenciesType = WorkerLoaderDepen
   const WorkerLoaderDependenciesClass = require(loaderPath).default;
   return new WorkerLoaderDependenciesClass() as DependenciesType;
 };
+
+/**
+ * Tests if provided path is valid.
+ *
+ * @param {string} value - The path to the file.
+ * @returns {boolean}
+ */
+export const testPath = (value: string): boolean => {
+  if (value) {
+    const path = buildPath(value);
+    return existsSync(path);
+  }
+
+  return false;
+};
