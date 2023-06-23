@@ -25,7 +25,10 @@ describe('messageHandler', () => {
   const workerId = 12;
   const pointer = 'testPointer';
   const sharedData = {};
-  const options = { workerLoaderPath: 'testPath' };
+  const options = {
+    workerLoaderPath: 'testPath',
+    workerLoaderDependenciesPath: 'testPath',
+  };
   let workerLoader: DefaultWorkerLoader;
   let queue: any;
   let worker: Worker;
@@ -61,7 +64,10 @@ describe('messageHandler', () => {
 
   it('should setup workerLoader and send setupComplete message', async () => {
     await messageHandler({ name: WorkerMessageName.Setup, workerId } as any);
-    expect(getWorkerLoader).toHaveBeenCalledWith(options?.workerLoaderPath);
+    expect(getWorkerLoader).toHaveBeenCalledWith(
+      options?.workerLoaderPath,
+      options?.workerLoaderDependenciesPath
+    );
     expect(workerLoader.setup).toHaveBeenCalledWith(sharedData);
     expect(parentPort.postMessage).toHaveBeenCalledWith({ workerId });
   });

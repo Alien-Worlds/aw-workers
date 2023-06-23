@@ -13,11 +13,16 @@ let workerLoader: WorkerLoader;
  * Sets up the worker loader with the specified path and optional shared data.
  *
  * @param {string} path - The path to the worker.
+ * @param {string} dependenciesPath - The path to the worker dependencies.
  * @param {unknown} [sharedData] - Optional shared data.
  * @returns {Promise<WorkerLoader>} A promise that resolves with the worker loader.
  */
-export const setupWorkerLoader = async (path: string, sharedData?: unknown) => {
-  workerLoader = getWorkerLoader(path);
+export const setupWorkerLoader = async (
+  path: string,
+  dependenciesPath?: string,
+  sharedData?: unknown
+) => {
+  workerLoader = getWorkerLoader(path, dependenciesPath);
   await workerLoader.setup(sharedData);
 
   return workerLoader;
@@ -60,6 +65,7 @@ export const getWorker = () => {
  */
 export const messageHandler = async (message: WorkerMessage) => {
   const { pointer, sharedData, options } = workerData as WorkerData;
+  const { workerLoaderPath, workerLoaderDependenciesPath } = options || {};
   if (message.name === WorkerMessageName.Setup) {
     /**
      * Handles the 'Setup' message sent to initialize the worker loader and set up shared data.
@@ -67,7 +73,7 @@ export const messageHandler = async (message: WorkerMessage) => {
      * otherwise, a 'SetupFailure' message with the error is sent.
      */
     try {
-      await setupWorkerLoader(options?.workerLoaderPath, sharedData);
+      await setupWorkerLoader(workerLoaderPath, workerLoaderDependenciesPath, sharedData);
       parentPort.postMessage(WorkerMessage.setupComplete(message.workerId));
     } catch (error) {
       parentPort.postMessage(WorkerMessage.setupFailure(message.workerId, error));

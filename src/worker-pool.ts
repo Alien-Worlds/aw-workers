@@ -31,6 +31,10 @@ export class WorkerPool<WorkerType = Worker> {
    */
   private workerLoaderPath: string;
   /**
+   * The path to the worker loader dependencies.
+   */
+  private workerLoaderDependenciesPath: string;
+  /**
    * The list of available worker proxies.
    */
   private availableWorkers: WorkerProxy[] = [];
@@ -54,9 +58,15 @@ export class WorkerPool<WorkerType = Worker> {
    * @returns {Promise<void>} A promise that resolves when the setup is complete.
    */
   public async setup(options: WorkerPoolOptions) {
-    const { threadsCount, inviolableThreadsCount, sharedData, workerLoaderPath } =
-      options;
+    const {
+      threadsCount,
+      inviolableThreadsCount,
+      sharedData,
+      workerLoaderPath,
+      workerLoaderDependenciesPath,
+    } = options;
     this.workerLoaderPath = workerLoaderPath;
+    this.workerLoaderDependenciesPath = workerLoaderDependenciesPath;
     this.sharedData = sharedData;
     this.workerMaxCount =
       threadsCount > inviolableThreadsCount
@@ -84,8 +94,11 @@ export class WorkerPool<WorkerType = Worker> {
    * @returns {Promise<WorkerType & WorkerProxy | null>} A promise that resolves to the worker instance, or null if no worker is available.
    */
   private async createWorker(): Promise<WorkerProxy> {
-    const { sharedData, workerLoaderPath } = this;
-    const proxy = new WorkerProxy(sharedData, { workerLoaderPath });
+    const { sharedData, workerLoaderPath, workerLoaderDependenciesPath } = this;
+    const proxy = new WorkerProxy(sharedData, {
+      workerLoaderPath,
+      workerLoaderDependenciesPath,
+    });
     await proxy.setup();
     return proxy;
   }

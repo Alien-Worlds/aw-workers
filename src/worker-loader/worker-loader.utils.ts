@@ -36,17 +36,20 @@ export const buildPath = (filePath: string): string => {
  * @returns {WorkerLoader} - The worker loader instance.
  * @throws {InvalidPathError} - If the specified file path does not exist.
  */
-export const getWorkerLoader = (path: string): WorkerLoader => {
+export const getWorkerLoader = (
+  path: string,
+  dependenciesPath?: string
+): WorkerLoader => {
   if (path) {
     const loaderPath = buildPath(path);
     if (existsSync(loaderPath) === false) {
       throw new InvalidPathError(loaderPath);
     }
     const WorkerLoaderClass = require(loaderPath).default;
-    return new WorkerLoaderClass() as WorkerLoader;
+    return new WorkerLoaderClass(dependenciesPath) as WorkerLoader;
   }
 
-  return new DefaultWorkerLoader();
+  return new DefaultWorkerLoader(dependenciesPath);
 };
 
 /**

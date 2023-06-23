@@ -12,6 +12,7 @@ export type WorkersConfig<SharedDataType = unknown> = {
 
 export type WorkerProxyOptions = {
   workerLoaderPath?: string;
+  workerLoaderDependenciesPath?: string;
 };
 
 export type WorkerPoolOptions = WorkersConfig & WorkerProxyOptions;
