@@ -5,3 +5,9 @@ export class UndefinedPointerError extends Error {
     );
   }
 }
+
+export class MissingClassError extends Error {
+  constructor(path: string) {
+    super(`Class not found in the specified file "${path}"`);
+  }
+}
