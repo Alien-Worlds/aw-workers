@@ -94,17 +94,13 @@ export class DefaultWorkerLoader<
    * Loads a worker based on the given pointer.
    *
    * @param {string} pointer - The pointer to the worker.
-   * @param {WorkerConstructorArgs} [workerConstructorArgs] - Additional arguments for the worker constructor.
    * @returns {Promise<Worker>} A promise that resolves with the loaded worker.
    * @throws {UndefinedPointerError} If the pointer is undefined.
    * @throws {Error} If a valid worker path or binding is not found.
    */
-  public async load(
-    pointer: string,
-    workerConstructorArgs?: WorkerConstructorArgs
-  ): Promise<Worker> {
+  public async load(pointer: string): Promise<Worker> {
     let WorkerClass;
-
+    const { dependencies } = this;
     if (!pointer) {
       throw new UndefinedPointerError();
     }
@@ -120,7 +116,7 @@ export class DefaultWorkerLoader<
       );
     }
 
-    const worker = new WorkerClass(workerConstructorArgs) as Worker;
+    const worker = new WorkerClass(dependencies) as Worker;
     return worker;
   }
 }
