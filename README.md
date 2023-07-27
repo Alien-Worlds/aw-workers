@@ -81,10 +81,10 @@ Please refer to the method documentation for more details on how to use each met
 
 ## Get Started
 
-To install the `@alien-worlds/workers` package, use the following command:
+To install the `@alien-worlds/aw-workers` package, use the following command:
 
 ```bash
-yarn add @alien-worlds/workers
+yarn add @alien-worlds/aw-workers
 ```
 
 ## Create Worker
