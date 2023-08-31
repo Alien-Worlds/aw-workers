@@ -279,7 +279,7 @@ export class WorkerMessage<DataType = unknown> {
    * @param {DataType} [data] - The data contained in the worker message.
    * @param {ErrorJson} [error] - The error information if the worker message is an error message.
    */
-  private constructor(
+  constructor(
     public readonly workerId: number,
     public readonly type: string,
     public readonly name: string,

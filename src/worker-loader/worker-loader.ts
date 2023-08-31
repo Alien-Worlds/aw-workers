@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { parentPort, threadId } from 'worker_threads';
 import { existsSync } from 'fs';
 import { Worker } from '../worker';
 import { buildPath, getWorkerLoaderDependencies } from './worker-loader.utils';
 import { WorkerClass } from '../worker.types';
 import { WorkerConstructorArgs, WorkerLoaderDependencies } from './worker-loader.types';
 import { UndefinedPointerError } from './worker-loader.errors';
+import { WorkerMessage } from '../worker-message';
 
 /**
  * Represents a worker loader.
@@ -118,5 +120,9 @@ export class DefaultWorkerLoader<
 
     const worker = new WorkerClass(dependencies) as Worker;
     return worker;
+  }
+
+  public sendMessage(message: WorkerMessage): void {
+    parentPort.postMessage(message.toJson());
   }
 }
